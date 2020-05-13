@@ -1,0 +1,21 @@
+Manual:
+
+(ultima versão)
+npm install cypress --save -dev
+
+(versão especifica)
+npm install cypress@3.6.0
+
+(Abrir cypress)
+./node_modules/.bin/cypress open 
+
+(ajuda o vs code na identificação do cypress e melhor apresentação de anot)
+/// <reference types ="cypress"/>
+
+
+(Não executa o teste com skip)
+it.skip
+
+(O debug para obter mais informaçõs F12 e pause para acionar pausadamente)
+.debug();
+cy.pause();
