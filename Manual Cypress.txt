@@ -19,3 +19,17 @@ it.skip
 (O debug para obter mais informaçõs F12 e pause para acionar pausadamente)
 .debug();
 cy.pause();
+
+(Reload de pagina, evita lixo de execução)
+cy.reload();
+
+(Executa antes do primeiro teste, dentro de um describe)
+Before (()=>{})
+
+(Executa antes de todos os testes)
+BeforeEach (()=>{})
+
+
+(Recuperar dado no elemento)
+com: "have.value"   Obs.: O text vê label 
+cy.get('#formNome').should('have.value', 'Usuario Nome');
