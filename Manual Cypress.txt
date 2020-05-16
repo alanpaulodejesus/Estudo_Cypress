@@ -33,3 +33,12 @@ BeforeEach (()=>{})
 (Recuperar dado no elemento)
 com: "have.value"   Obs.: O text vê label 
 cy.get('#formNome').should('have.value', 'Usuario Nome');
+
+
+(Cypress.json = comando define tempo projeto geral)
+{
+    "defaultCommandTimeout":1000
+}
+
+(funciona como um sleep)
+cy.wait(5000)
