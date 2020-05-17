@@ -23,3 +23,31 @@
 //
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
+
+Cypress.Commands.add('getToken' , (user, passwrd)=>{
+    cy.request({
+        method: 'POST',
+        url:'https://barrigarest.wcaquino.me/signin',
+        body:{
+            email: user,
+            redirecionar: false,
+            senha: passwrd
+        }
+    }).its('body.token').should('not.be.empty')
+    .then(token=>{
+        return token;
+    })
+})
+
+
+Cypress.Commands.add('resetRest',() =>{
+
+    cy.getToken('a@a', 'a').then(token =>{
+        cy.request({
+            method:'GET',
+            url: 'https://barrigarest.wcaquino.me/reset',
+            headers:{ Authorization: `JWT ${token}` }
+        }).its('status').should('be.equal', 200);
+    })
+    
+})
