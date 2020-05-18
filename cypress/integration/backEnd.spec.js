@@ -1,6 +1,8 @@
 /// <reference types ="cypress"/>
 
-describe.only('Api - Test in level integration - Login', ()=>{
+//aplicação referente api: https://barrigareact.wcaquino.me/
+
+describe('Api - Test in level integration - Login', ()=>{
     let token;
 
     before(()=>{
@@ -15,10 +17,10 @@ describe.only('Api - Test in level integration - Login', ()=>{
         cy.resetRest();
     })
 
-    it('Back Login', ()=>{
+    it('Criar conta', ()=>{
 
                 cy.request({
-                    url: 'https://barrigarest.wcaquino.me/contas',
+                    url: '/contas',
                     method:'POST',
                     headers:{ Authorization: `JWT ${token}` },
                     body:{
@@ -33,7 +35,55 @@ describe.only('Api - Test in level integration - Login', ()=>{
                     expect(res.body).to.have.property('nome', 'Conta Inserida Em Api 1');
                 })
         })      
+
+    it('Alterar conta', ()=>{
+
+        cy.request({
+            method:'GET',
+            url: '/contas',
+            headers:{ Authorization: `JWT ${token}` },
+            qs:{
+                nome:'Conta para alterar'
+            }
+
+        }).then(res => {
+            cy.request({
+                url:`/contas/${res.body[0].id}`,
+                method:'PUT',
+                headers:{ Authorization: `JWT ${token}` },
+                body:{
+                    nome: 'Conta Inserida Em Api alterada'
+                }
+            }).as('response')
             
+        })
+        cy.get('@response').its('status').should('be.equal', 200);
+    })
+           
+    it('Inserir conta repetida', ()=>{
+        cy.request({
+            url: '/contas',
+            method:'POST',
+            headers:{ Authorization: `JWT ${token}` },
+            body:{
+                nome: 'Conta repetida'
+            }
+            ,
+            failOnStatusCode: false 
+            
+        }).as('response');
+
+        cy.get('@response').then(res=>{
+
+            console.log('response');
+            expect(res.status).to.be.equal(201);
+            //Problema na api deveria ser 400
+            //expect(res.status).to.be.equal(400);
+            //expect(res.body.error).to.be.equal('Já existe uma conta criada com esse nome');
+            
+        })
+
+    })
 })
         
 
