@@ -115,7 +115,7 @@ describe('Api - Test in level integration - Login', ()=>{
         cy.get('@response').its('body.id').should('exist');
     })
 
-    it.only('Consultar Saldo', ()=>{
+    it('Consultar Saldo', ()=>{
 
         cy.request({
             method:'GET',
@@ -154,6 +154,24 @@ describe('Api - Test in level integration - Login', ()=>{
                     }
                 
             }).its('status').should('be.equal', 200)
+        })
+    })
+
+    it('Remover conta',()=>{
+
+        cy.request({
+            method:'GET',
+            url: '/transacoes',
+            headers:{ Authorization: `JWT ${token}` },
+            qs: {descricao: 'Movimentacao para exclusao'}
+
+        }).then(res=>{
+            cy.request({
+
+                method:'DELETE',
+                url: `/transacoes/${res.body[0].id}`,
+                headers:{ Authorization: `JWT ${token}` },
+            }).its('status').should('be.equal', 204);
         })
     })
 })
