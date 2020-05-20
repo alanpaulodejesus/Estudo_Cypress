@@ -37,7 +37,7 @@ describe('Api - Test in level integration - Login', ()=>{
         })      
 
     it('Alterar conta', ()=>{
-
+        /*
         cy.request({
             method:'GET',
             url: '/contas',
@@ -46,9 +46,12 @@ describe('Api - Test in level integration - Login', ()=>{
                 nome:'Conta para alterar'
             }
 
-        }).then(res => {
+        })
+        */
+        cy.getContaByName('Conta para movimentacoes').then(contaId => {
             cy.request({
-                url:`/contas/${res.body[0].id}`,
+                url:`/contas/${contaId}`,
+                //res.body[0].id
                 method:'PUT',
                 headers:{ Authorization: `JWT ${token}` },
                 body:{
@@ -83,6 +86,31 @@ describe('Api - Test in level integration - Login', ()=>{
             
         })
 
+    })
+
+    it('Criar uma movimentação', ()=>{
+        cy.getContaByName('Conta para movimentacoes')
+        .then(contaId =>{
+            cy.request({
+                url:'/transacoes',
+                method:'POST',
+                headers:{ Authorization: `JWT ${token}` },
+                body:{
+                    conta_id: contaId,
+                    data_pagamento: Cypress.moment().add({days: 1}).format('DD/MM/YYYY'),
+                    data_transacao: Cypress.moment().format('DD/MM/YYYY'),
+                    descricao: "Teste 123",
+                    envolvido: "Teste 123",
+                    status: true,
+                    tipo: "REC",
+                    valor: "123",
+    
+                }
+            }).as('response');
+            
+        })
+        cy.get('@response').its('status').should('be.equal', 201);
+        cy.get('@response').its('body.id').should('exist');
     })
 })
         
