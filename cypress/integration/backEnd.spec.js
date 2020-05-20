@@ -1,5 +1,7 @@
 /// <reference types ="cypress"/>
 
+import { forEach } from "async";
+
 //aplicação referente api: https://barrigareact.wcaquino.me/
 
 describe('Api - Test in level integration - Login', ()=>{
@@ -111,6 +113,48 @@ describe('Api - Test in level integration - Login', ()=>{
         })
         cy.get('@response').its('status').should('be.equal', 201);
         cy.get('@response').its('body.id').should('exist');
+    })
+
+    it.only('Consultar Saldo', ()=>{
+
+        cy.request({
+            method:'GET',
+            url: '/saldo',
+            headers:{ Authorization: `JWT ${token}` }
+        }).then(res=> {
+            let saldoConta;
+            res.body.forEach(c=>{
+                //conta e saldo, são informações do json com valores
+                if(c.conta==='Conta para saldo') saldoConta= c.saldo; 
+            })
+            expect(saldoConta).to.be.equal('534.00');
+        })
+
+        cy.request({
+            method:'GET',
+            url: '/transacoes',
+            headers:{ Authorization: `JWT ${token}` },
+            qs: {descricao: 'Movimentacao 1, calculo saldo'}
+
+        })
+        .then(res => { console.log(res.body[0]);
+                
+            cy.request({
+                url: `/transacoes/${res.body[0].id}`,
+                method:'PUT',
+                headers:{ Authorization: `JWT ${token}` },
+                body:{
+                    status: true,
+                    data_transacao: Cypress.moment(res.body[0].data_transacao).format('DD/MM/YYYY'),
+                    data_pagamento: Cypress.moment(res.body[0].data_pagamento).format('DD/MM/YYYY'),
+                    descricao: res.body[0].descricao,
+                    envolvido: res.body[0].envolvido,
+                    valor: res.body[0].valor,
+                    conta_id: res.body[0].conta_id
+                    }
+                
+            }).its('status').should('be.equal', 200)
+        })
     })
 })
         
